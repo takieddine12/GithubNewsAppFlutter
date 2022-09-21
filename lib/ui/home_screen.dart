@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -24,16 +25,10 @@ class _HomeScreenState extends State<HomeScreen> {
     'Education'
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    BlocProvider.of<NewsCubit>(context).getHeadlines();
-    BlocProvider.of<NewsCubit>(context).getEverything('health');
-  }
-
 
   @override
   Widget build(BuildContext context) {
+    BlocProvider.of<NewsCubit>(context).getEverything('health');
     return  Scaffold(
       body: SafeArea(
         child: Column(
@@ -72,85 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 20,),
-            const Padding(
-              padding: EdgeInsets.only(top: 10,left: 20,right: 20),
-              child: Text('Latest News',style: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'nunito_bold'),),
-            ),
-            const SizedBox(height: 20,),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                width: 350,
-                height: 250,
-                child :  BlocBuilder<NewsCubit,NewsState>(
-                  builder: (context , state){
-                    if(state is HeadlinesState){
-                      var news = state.headlineData;
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: news!.articles!.length,
-                        itemBuilder: (context , index){
-                          return GestureDetector(
-                            onTap: (){
-                              BlocProvider.of<NewsCubit>(context).getDetails(news.articles![index]);
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 10),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: news.articles![index].urlToImage != null ? Image.network(news.articles![index].urlToImage!,fit: BoxFit.cover,) :
-                                    Container(),
-                                  ),
-                                  Positioned(
-                                    top: 50,
-                                    left : 30,
-                                    child: Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author!}',
-                                      style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),) ,
-                                  ),
-                                  Positioned(
-                                    top: 80,
-                                    left: 30,
-                                    child: SizedBox(
-                                        width : 300,
-                                        child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
-                                            fontSize: 20,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),maxLines: 2,)),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    left: 30,
-                                    child: SizedBox(
-                                      width : 300,
-                                      child: Text(news.articles![index].content!,maxLines: 2,style: const TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w400,
-                                          fontFamily: 'nunito_semi'
-                                      ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    } else if (state is LoadingState){
-                      return const Center(
-                        child: CircularProgressIndicator(color: Colors.black87,),
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(color: Colors.black87,),
-                      );
-                    }
-                  },
-                ),
-              ),
-            ),
-            const SizedBox(height: 20,),
             Padding(
               padding: const EdgeInsets.only(top: 10,left: 20,right: 20),
               child: SizedBox(
@@ -179,7 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.only(right: 20,left: 20),
                         child: GestureDetector(
                           onTap: (){
-                            print('Current Query ' + _queries[index]);
                             context.read<NewsCubit>().getEverything(_queries[index]);
                           },
                           child: Text(_queries[index],style: const TextStyle(color: Colors.white,
@@ -205,7 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: CircularProgressIndicator(color: Colors.black87,),
                         );
                       }
-                      else if(state is LoadedState){
+                      if(state is LoadingState){
+                        return const Center(
+                          child: CircularProgressIndicator(color: Colors.black87,),
+                        );
+                      } else if(state is LoadedState){
                         var news = state.newsModel;
                         return ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -278,3 +197,77 @@ class _HomeScreenState extends State<HomeScreen> {
     return dt2.format(dtime);
   }
 }
+/*
+  Padding(
+              padding: const EdgeInsets.all(20),
+              child: SizedBox(
+                width: 350,
+                height: 250,
+                child :  BlocBuilder<NewsCubit,NewsState>(
+                  builder: (context , state){
+                    if(state is HeadlinesState){
+                      var news = state.headlineData;
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: news!.articles!.length,
+                        itemBuilder: (context , index){
+                          return GestureDetector(
+                            onTap: (){
+                              BlocProvider.of<NewsCubit>(context).getDetails(news.articles![index]);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: news.articles![index].urlToImage != null ? Image.network(news.articles![index].urlToImage!,fit: BoxFit.cover,) :
+                                    Container(),
+                                  ),
+                                  Positioned(
+                                    top: 50,
+                                    left : 30,
+                                    child: Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author!}',
+                                      style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),) ,
+                                  ),
+                                  Positioned(
+                                    top: 80,
+                                    left: 30,
+                                    child: SizedBox(
+                                        width : 300,
+                                        child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
+                                            fontSize: 20,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),maxLines: 2,)),
+                                  ),
+                                  Positioned(
+                                    bottom: 10,
+                                    left: 30,
+                                    child: SizedBox(
+                                      width : 300,
+                                      child: Text(news.articles![index].content!,maxLines: 2,style: const TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'nunito_semi'
+                                      ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                               ),
+                            ),
+                          );
+                        },
+                      );
+                    } else if (state is LoadingState){
+                      return const Center(
+                        child: CircularProgressIndicator(color: Colors.black87,),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 20,),
+ */

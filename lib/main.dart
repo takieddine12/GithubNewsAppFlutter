@@ -21,7 +21,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SplashScreen();
+    return BlocProvider<NewsCubit>(
+      create: (context) => NewsCubit(authService: AuthService()),
+      child: const AppCubitLogic(),
+    );
   }
 }
 
