@@ -7,9 +7,12 @@ import 'package:news_app_flutter/ui/home_screen.dart';
 import 'package:news_app_flutter/ui/splash_screen.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: MyApp(),
-    debugShowCheckedModeBanner: false,
+  runApp(BlocProvider(
+    create: (context) => NewsCubit(authService: AuthService()),
+    child: const MaterialApp(
+      home: MyApp(),
+      debugShowCheckedModeBanner: false,
+    ),
   ));
 }
 
@@ -18,10 +21,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NewsCubit(authService: AuthService()),
-      child: const AppCubitLogic(),
-    );
+    return const SplashScreen();
   }
 }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_flutter/cubit/app_cubit.dart';
+import 'package:news_app_flutter/cubit/app_cubit_state.dart';
 import 'package:news_app_flutter/services/auth_service.dart';
 import 'package:news_app_flutter/ui/home_screen.dart';
 
@@ -15,11 +16,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Future.delayed(const Duration(seconds: 7),(){
-      BlocProvider.of<NewsCubit>(context).getEverything('sport');
-      //BlocProvider.of<NewsCubit>(context).getHeadlines();
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
     });
   }
   @override

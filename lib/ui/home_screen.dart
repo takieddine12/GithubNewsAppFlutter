@@ -24,17 +24,24 @@ class _HomeScreenState extends State<HomeScreen> {
     'Education'
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<NewsCubit>(context).getHeadlines();
+    BlocProvider.of<NewsCubit>(context).getEverything('health');
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding:  const EdgeInsets.only(top: 20,left: 20,right: 20),
-          child:  Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Form(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10,left: 20,right: 20),
+              child: Form(
                 key: _searchKey,
                 child: TextFormField(
                   controller: _searchController,
@@ -45,21 +52,34 @@ class _HomeScreenState extends State<HomeScreen> {
                     return null;
                   },
                   decoration: InputDecoration(
-                     contentPadding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
                       hintText: 'search',
                       hintStyle: const TextStyle(fontStyle: FontStyle.italic,fontFamily: 'nunito_regular'),
                       border: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.black45),
                           borderRadius: BorderRadius.circular(20)
                       ),
-                      suffixIcon: const Icon(Icons.search,size: 25,color: Colors.black45,)
+                      suffixIcon:  IconButton(
+                        onPressed: (){
+                          var isSearchEditValidated = _searchKey.currentState!.validate();
+                          if(isSearchEditValidated){
+                            context.read<NewsCubit>().getEverything(_searchController.text);
+                          }
+                        },
+                        icon: const Icon(Icons.search,color: Colors.black54,size: 20,),)
                   ),
                 ),
               ),
-              const SizedBox(height: 20,),
-              const Text('Latest News',style: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'nunito_bold'),),
-              const SizedBox(height: 20,),
-              SizedBox(
+            ),
+            const SizedBox(height: 20,),
+            const Padding(
+              padding: EdgeInsets.only(top: 10,left: 20,right: 20),
+              child: Text('Latest News',style: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'nunito_bold'),),
+            ),
+            const SizedBox(height: 20,),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: SizedBox(
                 width: 350,
                 height: 250,
                 child :  BlocBuilder<NewsCubit,NewsState>(
@@ -87,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     top: 50,
                                     left : 30,
                                     child: Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author!}',
-                                    style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),) ,
+                                      style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),) ,
                                   ),
                                   Positioned(
                                     top: 80,
@@ -95,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: SizedBox(
                                         width : 300,
                                         child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
-                                        fontSize: 20,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),maxLines: 2,)),
+                                            fontSize: 20,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),maxLines: 2,)),
                                   ),
                                   Positioned(
                                     bottom: 10,
@@ -103,11 +123,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: SizedBox(
                                       width : 300,
                                       child: Text(news.articles![index].content!,maxLines: 2,style: const TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: 'nunito_semi'
-                                       ),
+                                          fontSize: 13,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily: 'nunito_semi'
+                                      ),
                                       ),
                                     ),
                                   )
@@ -129,8 +149,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 20,),
-              SizedBox(
+            ),
+            const SizedBox(height: 20,),
+            Padding(
+              padding: const EdgeInsets.only(top: 10,left: 20,right: 20),
+              child: SizedBox(
                 width: double.maxFinite,
                 height: 40,
                 child: ListView.builder(
@@ -156,6 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.only(right: 20,left: 20),
                         child: GestureDetector(
                           onTap: (){
+                            print('Current Query ' + _queries[index]);
+                            context.read<NewsCubit>().getEverything(_queries[index]);
                           },
                           child: Text(_queries[index],style: const TextStyle(color: Colors.white,
                               fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),),
@@ -165,14 +190,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 15,),
-              Expanded(
+            ),
+            const SizedBox(height: 15,),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10,left: 20,right: 20),
                 child: SizedBox(
                   width: 350,
                   height: 150,
                   child :  BlocBuilder<NewsCubit,NewsState>(
                     builder: (context , state){
-                      if(state is LoadedState){
+                      if (state is LoadingState){
+                        return const Center(
+                          child: CircularProgressIndicator(color: Colors.black87,),
+                        );
+                      }
+                      else if(state is LoadedState){
                         var news = state.newsModel;
                         return ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -208,10 +241,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           Flexible(
                                             child: Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author}',
-                                            style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),),
+                                              style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),),
                                           ),
                                           Text(formatDate(news.articles![index].publishedAt!),style: const TextStyle(color: Colors.white,
-                                          fontFamily: 'nunito_semi'),)
+                                              fontFamily: 'nunito_semi'),)
                                         ],
                                       ),
                                     )
@@ -221,11 +254,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         );
-                      } else if (state is LoadingState){
-                        return const Center(
-                          child: CircularProgressIndicator(color: Colors.black87,),
-                        );
-                      } else {
+                      }
+                      else {
                         return const Center(
                           child: CircularProgressIndicator(color: Colors.black87,),
                         );
@@ -234,8 +264,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

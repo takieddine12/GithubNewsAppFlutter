@@ -20,7 +20,7 @@ class NewsCubit extends Cubit<NewsState> {
   getEverything(String query) async {
     try {
       emit(LoadingState());
-      newsModel = await authService.getEverything('sport');
+      newsModel = await authService.getEverything(query);
       emit(LoadedState(newsModel));
     }catch(e){
 
@@ -29,6 +29,7 @@ class NewsCubit extends Cubit<NewsState> {
 
   getHeadlines() async {
     try {
+      emit(LoadingState());
       headlinesData = await authService.getHeadlines();
       emit(HeadlinesState(headlinesData));
     }catch(e){
