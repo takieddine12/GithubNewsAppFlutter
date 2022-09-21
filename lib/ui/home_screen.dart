@@ -25,10 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
     'Education'
   ];
 
-
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<NewsCubit>(context).getEverything('health');
     return  Scaffold(
       body: SafeArea(
         child: Column(
@@ -59,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           var isSearchEditValidated = _searchKey.currentState!.validate();
                           if(isSearchEditValidated){
                             context.read<NewsCubit>().getEverything(_searchController.text);
+                            FocusManager.instance.primaryFocus?.unfocus();
                           }
                         },
                         icon: const Icon(Icons.search,color: Colors.black54,size: 20,),)
@@ -115,19 +114,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 150,
                   child :  BlocBuilder<NewsCubit,NewsState>(
                     builder: (context , state){
-                      if (state is LoadingState){
-                        return const Center(
-                          child: CircularProgressIndicator(color: Colors.black87,),
-                        );
-                      }
                       if(state is LoadingState){
                         return const Center(
                           child: CircularProgressIndicator(color: Colors.black87,),
                         );
-                      } else if(state is LoadedState){
+                      }
+                      else if(state is LoadedState){
                         var news = state.newsModel;
                         return ListView.builder(
-                          scrollDirection: Axis.vertical,
+                          cacheExtent: 9999,
                           itemCount: news!.articles!.length,
                           itemBuilder: (context , index){
                             return GestureDetector(
@@ -140,7 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(20),
-                                      child: Image.network(news.articles![index].urlToImage!,fit: BoxFit.cover,),
+                                      child: news.articles![index].urlToImage == null ? Container() : Image.network(news.articles![index].urlToImage!,fit: BoxFit.cover,
+                                      filterQuality: FilterQuality.low,),
                                     ),
                                     Positioned(
                                       top: 10,

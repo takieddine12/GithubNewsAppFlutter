@@ -18,13 +18,11 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 7),(){
-
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      BlocProvider.of<NewsCubit>(context).getEverything('health');
     });
   }
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Center(
         child: Image.asset('assets/gifs/news.gif',),

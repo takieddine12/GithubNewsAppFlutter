@@ -106,15 +106,6 @@ class _NewsDetailsState extends State<NewsDetails> {
                       ),
                     ),
                   ),
-                  Positioned(
-                    bottom: 20,
-                    right: 20,
-                    child: FloatingActionButton(
-                      onPressed: (){},
-                      backgroundColor: Colors.red,
-                      child: const Icon(Icons.favorite_border,color: Colors.white,),
-                    ),
-                  )
                 ],
               );
             },
