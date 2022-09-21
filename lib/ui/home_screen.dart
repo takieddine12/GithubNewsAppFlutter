@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:news_app_flutter/cubit/app_cubit.dart';
 import 'package:news_app_flutter/cubit/app_cubit_state.dart';
 
@@ -51,18 +52,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                   decoration: InputDecoration(
                      contentPadding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
                       hintText: 'search',
-                      hintStyle: const TextStyle(fontStyle: FontStyle.italic),
+                      hintStyle: const TextStyle(fontStyle: FontStyle.italic,fontFamily: 'nunito_regular'),
                       border: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.black45),
                           borderRadius: BorderRadius.circular(20)
                       ),
-                      suffixIcon: Icon(Icons.search,size: 25,color: Colors.black45,)
+                      suffixIcon: const Icon(Icons.search,size: 25,color: Colors.black45,)
                   ),
                 ),
               ),
               const SizedBox(height: 20,),
-              const Text('Latest News',style: TextStyle(color: Colors.black,fontSize: 20,
-              fontFamily: 'nunito_semibold'),),
+              const Text('Latest News',style: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'nunito_bold'),),
               const SizedBox(height: 20,),
               SizedBox(
                 width: 350,
@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                                   top: 50,
                                   left : 30,
                                   child: Text(news.articles![index].author == null ? 'by N/A' : 'by ' + news.articles![index].author,
-                                  style: TextStyle(color: Colors.white),) ,
+                                  style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),) ,
                                 ),
                                 Positioned(
                                   top: 80,
@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                                   child: SizedBox(
                                       width : 300,
                                       child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
-                                      fontSize: 20,fontWeight: FontWeight.bold),)),
+                                      fontSize: 20,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),)),
                                 ),
                                 Positioned(
                                   bottom: 10,
@@ -106,7 +106,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                                       fontSize: 13,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w400,
-
+                                      fontFamily: 'nunito_semi'
                                      ),
                                     ),
                                   ),
@@ -153,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                       ),
                       child: Center(child: Padding(
                         padding: const EdgeInsets.only(right: 20,left: 20),
-                        child: Text(_queries[index],style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
+                        child: Text(_queries[index],style: const TextStyle(color: Colors.white,
+                            fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),),
                       )),
                     );
                   },
@@ -163,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
               Expanded(
                 child: SizedBox(
                   width: 350,
-                  height: 250,
+                  height: 150,
                   child :  BlocBuilder<NewsCubit,NewsState>(
                     builder: (context , state){
                       if(state is LoadedState){
@@ -182,21 +183,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                                   ),
                                   Positioned(
                                     top: 10,
-                                    left: 30,
+                                    left: 20,
+                                    right : 20,
                                     child: SizedBox(
-                                        width : 300,
+                                        width : 350,
                                         child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
-                                            fontSize: 17,fontWeight: FontWeight.bold),maxLines: 2,)),
+                                            fontSize: 17,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),maxLines: 2)),
                                   ),
                                   Positioned(
                                     bottom: 10,
-                                    left: 30,
-                                    right : 30,
+                                    left: 20,
+                                    right : 20,
                                     child: Row(
                                       mainAxisAlignment : MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author}'),
-                                        Text(news.articles![index].publishedAt!)
+                                        Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author}',
+                                        style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),),
+                                        Text(formatDate(news.articles![index].publishedAt!),style: const TextStyle(color: Colors.white,
+                                        fontFamily: 'nunito_semi'),)
                                       ],
                                     ),
                                   )
@@ -223,5 +227,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
         ),
       ),
     );
+  }
+
+  String formatDate(String date){
+    DateFormat dt1 = DateFormat('yyyy-MM-ddTHH:mm:ssZ');
+    DateTime dtime = dt1.parse(date);
+    DateFormat dt2 = DateFormat('yyyy-MM-dd HH:mm');
+    return dt2.format(dtime);
   }
 }

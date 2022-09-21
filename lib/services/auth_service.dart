@@ -7,7 +7,7 @@ import '../NewsData.dart';
 class AuthService {
 
   Future<NewsData?> getEverything() async {
-    var fullUrl = 'https://newsapi.org/v2/everything?q=LaLiga&apiKey=a9105f91876947b1b3b70761813fd4f9';
+    var fullUrl = 'https://newsapi.org/v2/everything?q=sport&apiKey=a9105f91876947b1b3b70761813fd4f9';
     try{
       var httpRequest  = await http.get(Uri.parse(fullUrl));
       if(httpRequest.statusCode == 200){
