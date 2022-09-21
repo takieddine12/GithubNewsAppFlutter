@@ -1,9 +1,8 @@
-
-
 import 'package:equatable/equatable.dart';
-import 'package:news_app_flutter/models/news_model.dart';
+import '../models/Articles.dart';
+import '../models/HeadlinesData.dart';
+import '../models/NewsData.dart';
 
-import '../NewsData.dart';
 
 class NewsState extends Equatable {
   @override
@@ -39,3 +38,18 @@ class LoadedState extends NewsState {
   List<Object?> get props => [newsModel];
 }
 
+class HeadlinesState extends NewsState {
+  HeadlinesData? headlineData;
+  HeadlinesState(this.headlineData);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [headlineData];
+}
+
+class NewsDetailsState extends NewsState {
+  Articles articles;
+  NewsDetailsState(this.articles);
+  @override
+  // TODO: implement props
+  List<Object?> get props => [articles];
+}

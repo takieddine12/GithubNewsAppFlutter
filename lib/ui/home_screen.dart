@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:news_app_flutter/cubit/app_cubit.dart';
 import 'package:news_app_flutter/cubit/app_cubit_state.dart';
 
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -11,9 +12,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
+class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
-  late TabController _tabController;
   final _searchKey = GlobalKey<FormState>();
 
   final _queries = [
@@ -24,18 +24,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
     'Education'
   ];
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _tabController = TabController(length: 5, vsync: this);
-  }
+
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
       body: SafeArea(
         child: Padding(
-          padding:  const EdgeInsets.all(20),
+          padding:  const EdgeInsets.only(top: 20,left: 20,right: 20),
           child:  Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -69,49 +64,55 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                 height: 250,
                 child :  BlocBuilder<NewsCubit,NewsState>(
                   builder: (context , state){
-                    if(state is LoadedState){
-                      var news = state.newsModel;
+                    if(state is HeadlinesState){
+                      var news = state.headlineData;
                       return ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: news!.articles!.length,
                         itemBuilder: (context , index){
-                          return Container(
-                            margin: const EdgeInsets.only(right: 10),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Image.network(news.articles![index].urlToImage!,fit: BoxFit.cover,),
-                                ),
-                                Positioned(
-                                  top: 50,
-                                  left : 30,
-                                  child: Text(news.articles![index].author == null ? 'by N/A' : 'by ' + news.articles![index].author,
-                                  style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),) ,
-                                ),
-                                Positioned(
-                                  top: 80,
-                                  left: 30,
-                                  child: SizedBox(
-                                      width : 300,
-                                      child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
-                                      fontSize: 20,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),)),
-                                ),
-                                Positioned(
-                                  bottom: 10,
-                                  left: 30,
-                                  child: SizedBox(
-                                    width : 300,
-                                    child: Text(news.articles![index].content!,maxLines: 2,style: const TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'nunito_semi'
-                                     ),
-                                    ),
+                          return GestureDetector(
+                            onTap: (){
+                              BlocProvider.of<NewsCubit>(context).getDetails(news.articles![index]);
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              child: Stack(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: news.articles![index].urlToImage != null ? Image.network(news.articles![index].urlToImage!,fit: BoxFit.cover,) :
+                                    Container(),
                                   ),
-                                )
-                              ],
+                                  Positioned(
+                                    top: 50,
+                                    left : 30,
+                                    child: Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author!}',
+                                    style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),) ,
+                                  ),
+                                  Positioned(
+                                    top: 80,
+                                    left: 30,
+                                    child: SizedBox(
+                                        width : 300,
+                                        child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
+                                        fontSize: 20,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),maxLines: 2,)),
+                                  ),
+                                  Positioned(
+                                    bottom: 10,
+                                    left: 30,
+                                    child: SizedBox(
+                                      width : 300,
+                                      child: Text(news.articles![index].content!,maxLines: 2,style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'nunito_semi'
+                                       ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           );
                         },
@@ -153,8 +154,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                       ),
                       child: Center(child: Padding(
                         padding: const EdgeInsets.only(right: 20,left: 20),
-                        child: Text(_queries[index],style: const TextStyle(color: Colors.white,
-                            fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),),
+                        child: GestureDetector(
+                          onTap: (){
+                          },
+                          child: Text(_queries[index],style: const TextStyle(color: Colors.white,
+                              fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),),
+                        ),
                       )),
                     );
                   },
@@ -173,38 +178,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                           scrollDirection: Axis.vertical,
                           itemCount: news!.articles!.length,
                           itemBuilder: (context , index){
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 10),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(20),
-                                    child: Image.network(news.articles![index].urlToImage!,fit: BoxFit.cover,),
-                                  ),
-                                  Positioned(
-                                    top: 10,
-                                    left: 20,
-                                    right : 20,
-                                    child: SizedBox(
-                                        width : 350,
-                                        child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
-                                            fontSize: 17,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),maxLines: 2)),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    left: 20,
-                                    right : 20,
-                                    child: Row(
-                                      mainAxisAlignment : MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author}',
-                                        style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),),
-                                        Text(formatDate(news.articles![index].publishedAt!),style: const TextStyle(color: Colors.white,
-                                        fontFamily: 'nunito_semi'),)
-                                      ],
+                            return GestureDetector(
+                              onTap: (){
+                                BlocProvider.of<NewsCubit>(context).getDetails(news.articles![index]);
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.only(bottom: 10),
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: Image.network(news.articles![index].urlToImage!,fit: BoxFit.cover,),
                                     ),
-                                  )
-                                ],
+                                    Positioned(
+                                      top: 10,
+                                      left: 20,
+                                      right : 20,
+                                      child: SizedBox(
+                                          width : 350,
+                                          child: Text(news.articles![index].title!,style: const TextStyle(color: Colors.white,
+                                              fontSize: 17,fontWeight: FontWeight.bold,fontFamily: 'nunito_bold'),maxLines: 2)),
+                                    ),
+                                    Positioned(
+                                      bottom: 10,
+                                      left: 20,
+                                      right : 20,
+                                      child: Row(
+                                        mainAxisAlignment : MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Flexible(
+                                            child: Text(news.articles![index].author == null ? 'by N/A' : 'by ${news.articles![index].author}',
+                                            style: const TextStyle(color: Colors.white,fontFamily: 'nunito_semi'),),
+                                          ),
+                                          Text(formatDate(news.articles![index].publishedAt!),style: const TextStyle(color: Colors.white,
+                                          fontFamily: 'nunito_semi'),)
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
                             );
                           },

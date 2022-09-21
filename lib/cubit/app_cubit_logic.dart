@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_flutter/cubit/app_cubit.dart';
 import 'package:news_app_flutter/cubit/app_cubit_state.dart';
-import 'package:news_app_flutter/models/news_model.dart';
+import 'package:news_app_flutter/ui/details_screen.dart';
 import 'package:news_app_flutter/ui/home_screen.dart';
 import 'package:news_app_flutter/ui/splash_screen.dart';
 
@@ -27,9 +27,14 @@ class _AppCubitLogicState extends State<AppCubitLogic> {
           }
           else if (state is SplashState){
              return const SplashScreen();
-          } else if (state is LoadedState){
-             return const HomeScreen();
-          } else {
+          }
+          else if (state is LoadedState){
+            return const HomeScreen();
+          }
+          else if(state is NewsDetailsState){
+            return const NewsDetails();
+          }
+          else {
              return Container();
           }
         },

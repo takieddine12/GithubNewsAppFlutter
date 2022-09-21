@@ -1,8 +1,11 @@
 import 'package:bloc/bloc.dart';
 import 'package:news_app_flutter/cubit/app_cubit_state.dart';
-import 'package:news_app_flutter/models/news_model.dart';
+import 'package:news_app_flutter/models/HeadlinesData.dart';
 
-import '../NewsData.dart';
+
+
+import '../models/Articles.dart';
+import '../models/NewsData.dart';
 import '../services/auth_service.dart';
 
 class NewsCubit extends Cubit<NewsState> {
@@ -12,16 +15,31 @@ class NewsCubit extends Cubit<NewsState> {
   }
   late AuthService authService;
   NewsData? newsModel;
+  HeadlinesData? headlinesData;
 
-  getEverything() async {
+  getEverything(String query) async {
     try {
       emit(LoadingState());
-      newsModel = await authService.getEverything();
-      print("newsdata $newsModel");
+      newsModel = await authService.getEverything('sport');
       emit(LoadedState(newsModel));
     }catch(e){
 
     }
   }
 
+  getHeadlines() async {
+    try {
+      headlinesData = await authService.getHeadlines();
+      emit(HeadlinesState(headlinesData));
+    }catch(e){
+      //emit(LoadingState());
+    }
+  }
+  getDetails(Articles articles){
+    emit(NewsDetailsState(articles));
+  }
+
+  goHome(){
+    emit(LoadedState(newsModel));
+  }
 }

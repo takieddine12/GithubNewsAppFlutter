@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app_flutter/cubit/app_cubit.dart';
 import 'package:news_app_flutter/cubit/app_cubit_logic.dart';
 import 'package:news_app_flutter/services/auth_service.dart';
+import 'package:news_app_flutter/ui/home_screen.dart';
 import 'package:news_app_flutter/ui/splash_screen.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<NewsCubit>(
+    return BlocProvider(
       create: (context) => NewsCubit(authService: AuthService()),
       child: const AppCubitLogic(),
     );
